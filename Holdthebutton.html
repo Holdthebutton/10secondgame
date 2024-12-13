@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -68,7 +67,7 @@
   </div>
   <script>
     let lastAttempt = "None";
-    let closestAttempt = 10;
+    let closestAttempt = 10.00; // Initialize closest attempt to the target time.
     const holdButton = document.getElementById("hold-button");
     const lastAttemptDisplay = document.getElementById("last-attempt");
     const closestAttemptDisplay = document.getElementById("closest-attempt");
@@ -86,7 +85,7 @@
       const endTime = new Date().getTime();
       const holdTime = (endTime - startTime) / 1000;
       lastAttempt = holdTime.toFixed(2);
-      if (Math.abs(10 - holdTime) < Math.abs(10 - closestAttempt)) {
+      if (closestAttempt === 10.00 || Math.abs(10 - holdTime) < Math.abs(10 - closestAttempt)) {
         closestAttempt = holdTime;
       }
       lastAttemptDisplay.textContent = `${lastAttempt} seconds`;
@@ -110,3 +109,4 @@
   </script>
 </body>
 </html>
+
