@@ -1,139 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hold the Button Game</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hold the Button Challenge</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            user-select: none; /* Prevent all text selection */
-        }
+    .container {
+      margin-top: 50px;
+    }
 
-        .game-container {
-            text-align: center;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-        }
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      cursor: pointer;
+    }
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
+    .results {
+      margin-top: 20px;
+      font-size: 18px;
+    }
 
-        .instructions p {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 20px;
-            font-size: 20px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .button:active {
-            background-color: #45a049;
-        }
-
-        .result {
-            margin-top: 20px;
-        }
-
-        .result p {
-            font-size: 16px;
-        }
-
-        @media (max-width: 500px) {
-            .button {
-                font-size: 18px;
-                padding: 15px;
-            }
-        }
-
-        #currentTime {
-            display: none;
-        }
-    </style>
+    p {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>Hold the Button for Exactly 10 Seconds!</h1>
-        <h1>By Ayman Ali</h1>
-        <div class="instructions">
-            <p>Press and hold the button for 10 seconds.</p>
-        </div>
-        <button id="holdButton" class="button">Hold Me!</button>
-        <div class="result">
-            <p>Closest Time: <span id="closestTime">0.00</span> seconds</p>
-            <p>Current Time: <span id="currentTime">0.00</span> seconds</p>
-        </div>
+  <div class="container">
+    <h1>Hold the Button for 10 Seconds</h1>
+    <button id="hold-button">Hold Me</button>
+    <div class="results">
+      <p>Last Attempt: <span id="last-attempt">None</span></p>
+      <p>Closest Attempt: <span id="closest-attempt">None</span></p>
     </div>
+    <p>By Ayman Ali</p>
+  </div>
+  <script>
+    let lastAttempt = "None";
+    let closestAttempt = 10;
+    const holdButton = document.getElementById("hold-button");
+    const lastAttemptDisplay = document.getElementById("last-attempt");
+    const closestAttemptDisplay = document.getElementById("closest-attempt");
 
-    <script>
-        let holdButton = document.getElementById("holdButton");
-        let currentTimeSpan = document.getElementById("currentTime");
-        let closestTimeSpan = document.getElementById("closestTime");
+    let timer;
+    let startTime;
 
-        let closestTime = 0;
-        let startTime = 0;
-        let holding = false;
+    holdButton.addEventListener("mousedown", () => {
+      startTime = new Date().getTime();
+      timer = setInterval(updateTime, 10);
+    });
 
-        let interval;
+    holdButton.addEventListener("mouseup", () => {
+      clearInterval(timer);
+      const endTime = new Date().getTime();
+      const holdTime = (endTime - startTime) / 1000;
+      lastAttempt = holdTime.toFixed(2);
+      if (Math.abs(10 - holdTime) < Math.abs(10 - closestAttempt)) {
+        closestAttempt = holdTime;
+      }
+      lastAttemptDisplay.textContent = `${lastAttempt} seconds`;
+      closestAttemptDisplay.textContent = `${closestAttempt.toFixed(2)} seconds`;
+    });
 
-        function updateCurrentTime() {
-            if (holding) {
-                let elapsedTime = (Date.now() - startTime) / 1000;
-            }
-        }
+    function updateTime() {
+      const currentTime = new Date().getTime();
+      const elapsedTime = (currentTime - startTime) / 1000;
+      if (elapsedTime >= 10) {
+        clearInterval(timer);
+      }
+    }
 
-        function checkResult() {
-            let elapsedTime = (Date.now() - startTime) / 1000;
-            if (Math.abs(elapsedTime - 10) < Math.abs(closestTime - 10)) {
-                closestTime = elapsedTime;
-                closestTimeSpan.innerText = closestTime.toFixed(2);
-            }
-        }
-
-        holdButton.addEventListener("touchstart", startHold);
-        holdButton.addEventListener("mousedown", startHold);
-
-        holdButton.addEventListener("touchend", stopHold);
-        holdButton.addEventListener("mouseup", stopHold);
-
-        function startHold() {
-            holding = true;
-            startTime = Date.now();
-            interval = setInterval(updateCurrentTime, 10);
-        }
-
-        function stopHold() {
-            if (holding) {
-                holding = false;
-                clearInterval(interval);
-                checkResult();
-            }
-        }
-    </script>
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey && event.key === "c") || (event.metaKey && event.key === "c")) {
+        event.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
